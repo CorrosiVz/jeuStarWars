@@ -377,6 +377,9 @@ game.update = function (tFrame) {
                 console.log("Collision detected between R2D2 and a sprite!");
                 sprite.isColliding = true;
                 // Ajout de points
+               // Disparition de l'avion
+               sprite.stop(); // Arrête l'avion quand collision
+               //sprite.start(); // Replace l'avion en haut de l'écran
             }
         } else {
             sprite.isColliding = false;
