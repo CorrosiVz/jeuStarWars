@@ -465,6 +465,21 @@ game.init =  function () {
 window.addEventListener("load", () => {game.init();})
 
 
+// Ajout d'un Timer de 3min pour la partie
+var minute = 3;
+var seconde = 60;
+
+function timer () { // faire un switch ccase plutôt que des if
+    if (minute == 0 && seconde == 0) { // si le temps est écoulé : arrêt du jeu
+        game.stop(); 
+    } else if (seconde == 0) { 
+        minute -= 1;
+        seconde = 60;
+    } else {
+    seconde -= 1;
+    }
+    setInterval(timer, 1000); // appel de la fonction timer chaque seconde
+}
 
 
 
