@@ -283,6 +283,24 @@ class Sprite {
     show() {
         this.#DOM.style.display = "block";
     }
+
+    // Remet le sprite à sa position initiale
+    reset() {
+        this.stop();
+        let x = playground.size.width * Math.random();
+        this.pos = new Position(x, -this.size.height);
+        this.changeSpeed(3, 203);
+        this.isColliding = false;
+    }
+
+    // Remet le Joueur à sa position initiale
+    resetPlayer() {
+        this.stop();
+        let x = playground.size.width / 2;
+        let y = playground.size.height - this.size.height;
+        this.pos = new Position(x, y);
+        this.changeSpeed(0, 0);
+    }
 }
 
 class Plane extends Sprite {
@@ -392,6 +410,12 @@ class Score {
     updateDisplay() {
         this.#DOM.innerHTML = 'Score: ' + this.#value;
     }
+
+    // Remet le score à zéro
+    reset() {
+        this.#value = 0;
+        this.updateDisplay();
+    }
 }
 
 ///////////////////////////////////////////////////////////////
@@ -400,28 +424,69 @@ class Score {
 
 // Ajout d'un Timer de 3min pour la partie
 class Timer {
+    id;
     #minutes; //mémo : suppr?
     #secondes;//mémo : suppr?
 
-    constructor(minutes, secondes){
+    constructor(id, minutes, secondes) {
+        this.id = id;
         this.minutes = minutes;
         this.secondes = secondes;
     }
 
     timer () { 
+        let self = this; // stocker une référence à this
         let timerDisplay = document.getElementById("timer");
         timerDisplay.textContent = this.minutes + ":" + (this.secondes<10 ? "0":"") + this.secondes;
-        
+    
         if (this.minutes == 0 && this.secondes == 0) { // si le temps est écoulé : arrêt du jeu
-            game.stop(); 
+            game.stop();
+            clearTimeout(this.timeoutID);
         } else if (this.secondes == 0) { 
             this.minutes -= 1;
             this.secondes = 59;
         } else {
-        this.secondes -= 1;
+            this.secondes -= 1;
+            // console.log("je décrémente", this.minutes, this.secondes);
         }
+
+        if (game.run === true) {
+            // console.log("setTimeout a été appelé !");
+            this.timeoutID = setTimeout(()=>self.timer(), 1000);
+        }
+    }
+
+    // Arrête le timer
+    stop() {
+        clearTimeout(this.timeoutID);
+    }
+
+    // Remet le timer à zéro
+    reset() {
+        this.stop();
+        this.minutes = 0;
+        this.secondes = 3;
+    }
+}
+
+///////////////////////////////////////////////////////////////
+// Barre de vie
+///////////////////////////////////////////////////////////////
+
+class lifeBar {
+    constructor(life) {
+        this.life = life;
+    }
+    
+    lifeSet () {
+        let lifeDisplay = document.getElementById("life");
+        lifeDisplay.textContent = this.life;
         
-        setTimeout(()=>this.timer(), 1000); // appel de la fonction timer chaque seconde
+        //Si R2D2 touche DarthVador on perds une vie
+        //refaire méthode areIntersecting pour DarthVador ? comment l'identifier parmi tous les sprites ?
+    
+        //si on touche une croix ou coeur on gagne une vie
+        // 🔋 ❤️
     }
 }
 
@@ -504,7 +569,7 @@ game.onkeydown = function (key) {
             game.r2d2.changeSpeed(0, delta);
             break;
         case "s":
-            game.run = false;
+            game.stop();
             break;
         default:
             console.log(key)
@@ -529,21 +594,43 @@ function main(tFrame) {
 
 // Démmare le jeu
 game.start = function () {
+    document.getElementById("start-menu").style.display = "none";
+    this.run = true;
+    this.startTimer.timer();
+    this.tFrameLast = 0;
     // lance tous les sprites
     for(sprite of this.sprites) {
         sprite.start();
     }
+    main(0); // Début du cycle
+}
+
+game.reset = function () {
+    // Remet à zéro le score
+    this.score.reset();
+    // Remet à zéro le timer
+    this.startTimer.reset();
+    // Remet à zéro le robot
+    this.r2d2.resetPlayer();
 }
 
 game.stop = function () {
-    game.run = false;
+    console.log("game.stop() a été appelé !");
+    this.run = false;
+    this.startTimer.stop();
+    document.getElementById("start-menu").style.display = "flex";
+    this.reset();
 }
 game.init =  function () {
     // Attend l'initialisation des autres sprites
+    this.r2d2.resetPlayer();
+
     this.score = new Score("score");
-    //Démarrage du Timer
-    let startTimer = new Timer(3,0);
-    startTimer.timer();
+    
+    this.startTimer = new Timer("startTimer",0,3);
+
+    let startLifeBar = new lifeBar("❤️❤️❤️");
+    startLifeBar.lifeSet();
 
     let sprite = new Plane("x_wing");
     game.sprites.push(sprite);
@@ -560,17 +647,13 @@ game.init =  function () {
     sprite = new Plane("darthvader");
     game.sprites.push(sprite);
 
-    this.run = true;
-    this.tFrameLast = 0;
-
-    game.start();
-    main(0); // Début du cycle
 }
 
 // L'initialisation est asynchrone donc il faut attendre
-// Il faut que toutes les images soient chargées donc on
-// s'acroche à l'évelment load de window
+// que toutes les images soient chargées donc on
+// s'acroche à l'événement load de window
 window.addEventListener("load", () => {game.init();})
+window.addEventListener("load", () => {document.getElementById('start-button').addEventListener('click', () => game.start());})
 
 
 
