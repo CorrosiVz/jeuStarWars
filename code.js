@@ -275,6 +275,14 @@ class Sprite {
 
         return new Rectangle(pos, this.#size);
     }
+
+    hide() {
+        this.#DOM.style.display = "none";
+    }
+
+    show() {
+        this.#DOM.style.display = "block";
+    }
 }
 
 class Plane extends Sprite {
@@ -313,6 +321,7 @@ class Plane extends Sprite {
             this.waitingTime -= duration;
             if (this.waitingTime <= 0) {
                 this.waitingTime = 0;
+                this.show(); // Affiche le sprite si il avait été touché auparavant
                 this.start();
             }
         }
@@ -425,8 +434,7 @@ game.update = function (tFrame) {
                 // Ajout de points
                 game.score.increaseScore(40);
                 // Disparition de l'avion
-                sprite.stop(); // Arrête l'avion quand collision
-                //sprite.start(); // Replace l'avion en haut de l'écran
+                sprite.hide(); // Cache le sprite jusqu'à la prochaine vague
             }
         } else {
             sprite.isColliding = false;
