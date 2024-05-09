@@ -424,28 +424,36 @@ class Score {
 
 // Ajout d'un Timer de 3min pour la partie
 class Timer {
+    id;
     #minutes; //mémo : suppr?
     #secondes;//mémo : suppr?
 
-    constructor(minutes, secondes){
+    constructor(id, minutes, secondes) {
+        this.id = id;
         this.minutes = minutes;
         this.secondes = secondes;
     }
 
     timer () { 
+        let self = this; // stocker une référence à this
         let timerDisplay = document.getElementById("timer");
         timerDisplay.textContent = this.minutes + ":" + (this.secondes<10 ? "0":"") + this.secondes;
-        
+    
         if (this.minutes == 0 && this.secondes == 0) { // si le temps est écoulé : arrêt du jeu
-            game.stop(); 
+            game.stop();
+            clearTimeout(this.timeoutID);
         } else if (this.secondes == 0) { 
             this.minutes -= 1;
             this.secondes = 59;
         } else {
-        this.secondes -= 1;
+            this.secondes -= 1;
+            // console.log("je décrémente", this.minutes, this.secondes);
         }
-        
-        this.timeoutID = setTimeout(()=>this.timer(), 1000); // appel de la fonction timer chaque seconde
+
+        if (game.run === true) {
+            // console.log("setTimeout a été appelé !");
+            this.timeoutID = setTimeout(()=>self.timer(), 1000);
+        }
     }
 
     // Arrête le timer
@@ -466,7 +474,7 @@ class Timer {
 ///////////////////////////////////////////////////////////////
 
 class lifeBar {
-    constructor(life){
+    constructor(life) {
         this.life = life;
     }
     
@@ -561,7 +569,7 @@ game.onkeydown = function (key) {
             game.r2d2.changeSpeed(0, delta);
             break;
         case "s":
-            game.run = false;
+            game.stop();
             break;
         default:
             console.log(key)
@@ -587,8 +595,8 @@ function main(tFrame) {
 // Démmare le jeu
 game.start = function () {
     document.getElementById("start-menu").style.display = "none";
-    this.startTimer.timer();
     this.run = true;
+    this.startTimer.timer();
     this.tFrameLast = 0;
     // lance tous les sprites
     for(sprite of this.sprites) {
@@ -602,28 +610,25 @@ game.reset = function () {
     this.score.reset();
     // Remet à zéro le timer
     this.startTimer.reset();
-    // Remet à zéro les sprites
-    for (let sprite of this.sprites) {
-        sprite.reset();
-    }
     // Remet à zéro le robot
     this.r2d2.resetPlayer();
 }
 
 game.stop = function () {
-    game.run = false;
+    console.log("game.stop() a été appelé !");
+    this.run = false;
     this.startTimer.stop();
-    document.getElementById("start-menu").style.display = "block";
+    document.getElementById("start-menu").style.display = "flex";
     this.reset();
 }
 game.init =  function () {
     // Attend l'initialisation des autres sprites
+    this.r2d2.resetPlayer();
 
     this.score = new Score("score");
-    // Démarrage du Timer
-    this.startTimer = new Timer(0,3);
+    
+    this.startTimer = new Timer("startTimer",0,3);
 
-    //Démarrage de la barre de vie
     let startLifeBar = new lifeBar("❤️❤️❤️");
     startLifeBar.lifeSet();
 

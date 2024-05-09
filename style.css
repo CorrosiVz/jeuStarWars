@@ -25,6 +25,18 @@ html,body {
     border-radius: 5px;
     cursor: pointer;
   }
+#pause-menu {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.8); /* Fond semi-transparent */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+  }
 #playground {
     height: 100vh;
     width: 100%;
@@ -45,7 +57,7 @@ html,body {
 
   #score {
     position: absolute;
-    top: 10px;
+    top: 42px;
     right: 10px;
     color: #fff;
     font-size: 24px;
@@ -55,7 +67,7 @@ html,body {
   #timer {
     position: absolute;
     top: 0;
-    right: 0;
+    right: 10px;
     z-index: 1;
     color: white;
     font-size: 32px;
