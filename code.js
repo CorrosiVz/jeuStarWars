@@ -656,6 +656,55 @@ window.addEventListener("load", () => {game.init();})
 window.addEventListener("load", () => {document.getElementById('start-button').addEventListener('click', () => game.start());})
 
 
+// Ajout d'un Timer de 3min pour la partie
+class Timer {
+    #minutes; //mémo : suppr?
+    #secondes;//mémo : suppr?
 
+    constructor(minutes, secondes){
+        this.minutes = minutes;
+        this.secondes = secondes;
+    }
 
+    timer () { 
+        var timerDisplay = document.getElementById("timer");
+        timerDisplay.textContent = this.minutes + ":" + (this.secondes<10 ? "0":"") + this.secondes;
+        
+        if (this.minutes == 0 && this.secondes == 0) { // si le temps est écoulé : arrêt du jeu
+            game.stop(); 
+        } else if (this.secondes == 0) { 
+            this.minutes -= 1;
+            this.secondes = 59;
+        } else {
+        this.secondes -= 1;
+        }
+        
+        setTimeout(()=>this.timer(), 1000); // appel de la fonction timer chaque seconde
+    }
+}
 
+//Démarrage du Timer
+var startTimer = new Timer(3,0);
+startTimer.timer();
+
+//Barre de vie
+class lifeBar {
+    constructor(life){
+        this.life = life;
+    }
+    
+    lifeSet () {
+        var lifeDisplay = document.getElementById("life");
+        lifeDisplay.textContent = this.life;
+        
+        //Si R2D2 touche DarthVador on perds une vie
+        //refaire méthode areIntersecting pour DarthVador ? comment l'identifier parmi tous les sprites ?
+    
+        //si on touche une croix ou coeur on gagne une vie
+        // 🔋 ❤️
+    }
+}
+
+//Démarrage de la barre de vie
+var startLifeBar = new lifeBar("❤️❤️❤️");
+startLifeBar.lifeSet();
