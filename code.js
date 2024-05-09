@@ -339,6 +339,43 @@ class Rectangle {
     }
 }
 
+///////////////////////////////////////////////////////////////
+// Score
+///////////////////////////////////////////////////////////////
+
+class Score {
+    id;
+    #DOM;
+    #value;
+    constructor(id) {
+        this.#value = 0;
+        this.#DOM = document.getElementById(id);
+    }
+
+    // Getter de la valeur du score
+    get value() {
+        return this.#value;
+    }
+
+    // Ajoute un nombre de points au score
+    increaseScore(value) {
+        this.#value += value;
+        this.updateDisplay();
+    }
+
+    // Retire un nombre de points au score
+    decreaseScore(value) {
+        this.#value -= value;
+        if (this.#value < 0) this.#value = 0; // Pas de score négatif
+        this.updateDisplay();
+    }
+
+    // Met à jour l'affichage du score
+    updateDisplay() {
+        this.#DOM.innerHTML = 'Score: ' + this.#value;
+    }
+}
+
 
 
 
@@ -377,6 +414,7 @@ game.update = function (tFrame) {
                 console.log("Collision detected between R2D2 and a sprite!");
                 sprite.isColliding = true;
                 // Ajout de points
+                game.score.increaseScore(40);
             }
         } else {
             sprite.isColliding = false;
@@ -437,6 +475,8 @@ game.stop = function () {
 }
 game.init =  function () {
     // Attend l'initialisation des autres sprites
+    this.score = new Score("score");
+
     let sprite = new Plane("x_wing");
     game.sprites.push(sprite);
 
@@ -447,6 +487,9 @@ game.init =  function () {
     game.sprites.push(sprite);
 
     sprite = new Plane("obi_wan_starfighter");
+    game.sprites.push(sprite);
+
+    sprite = new Plane("darthvader");
     game.sprites.push(sprite);
 
     this.run = true;
