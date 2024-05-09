@@ -424,6 +424,9 @@ game.update = function (tFrame) {
                 sprite.isColliding = true;
                 // Ajout de points
                 game.score.increaseScore(40);
+                // Disparition de l'avion
+                sprite.stop(); // Arrête l'avion quand collision
+                //sprite.start(); // Replace l'avion en haut de l'écran
             }
         } else {
             sprite.isColliding = false;
@@ -514,6 +517,33 @@ game.init =  function () {
 window.addEventListener("load", () => {game.init();})
 
 
+// Ajout d'un Timer de 3min pour la partie
+class Timer {
+    #minutes; //mémo : suppr?
+    #secondes;//mémo : suppr?
 
+    constructor(minutes, secondes){
+        this.minutes = minutes;
+        this.secondes = secondes;
+    }
 
+    timer () { 
+        var timerDisplay = document.getElementById("timer");
+        timerDisplay.textContent = this.minutes + ":" + (this.secondes<10 ? "0":"") + this.secondes;
+        
+        if (this.minutes == 0 && this.secondes == 0) { // si le temps est écoulé : arrêt du jeu
+            game.stop(); 
+        } else if (this.secondes == 0) { 
+            this.minutes -= 1;
+            this.secondes = 59;
+        } else {
+        this.secondes -= 1;
+        }
+        
+        setTimeout(()=>this.timer(), 1000); // appel de la fonction timer chaque seconde
+    }
+}
 
+//Démarrage du Timer
+var startTimer = new Timer(3,0);
+startTimer.timer();

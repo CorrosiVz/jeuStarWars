@@ -28,3 +28,13 @@ html,body {
     font-size: 24px;
     z-index: 1;
   }
+
+  #timer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 1;
+    color: white;
+    font-size: 32px;
+    font-weight: bold;
+  }
