@@ -495,3 +495,25 @@ class Timer {
 //Démarrage du Timer
 var startTimer = new Timer(3,0);
 startTimer.timer();
+
+//Barre de vie
+class lifeBar {
+    constructor(life){
+        this.life = life;
+    }
+    
+    lifeSet () {
+        var lifeDisplay = document.getElementById("life");
+        lifeDisplay.textContent = this.life;
+        
+        //Si R2D2 touche DarthVador on perds une vie
+        //refaire méthode areIntersecting pour DarthVador ? comment l'identifier parmi tous les sprites ?
+    
+        //si on touche une croix ou coeur on gagne une vie
+        // 🔋 ❤️
+    }
+}
+
+//Démarrage de la barre de vie
+var startLifeBar = new lifeBar("❤️❤️❤️");
+startLifeBar.lifeSet();
