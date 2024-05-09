@@ -99,7 +99,7 @@ class Position {
     move(speed, duration) {
         // Calcule le déplacement de la vitesse en fonction du temps
         let delta = speed.delta(duration);
-        // calcule la nouvelle pôsition
+        // calcule la nouvelle position
         return this.shift(delta.x, delta.y);
     }
 };
@@ -255,6 +255,15 @@ class Sprite {
     update(duration) {
         // Deplace la position en fonction de la vitesse et du temps
         this.pos = this.#pos.move(this.#speed, duration);
+
+        if (this.id === "R2D2") {
+            // Empeche de sortir de l'aire de jeux
+            let minX = 0;
+            let minY = 0;
+            let maxX = playground.size.width - this.#size.width;
+            let maxY = playground.size.height - this.#size.height;
+            this.pos = new Position(limit(minX, this.#pos.x, maxX), limit(minY, this.#pos.y, maxY));
+        }
     };
 
     // Getter de la hitbox du sprite
