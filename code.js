@@ -460,8 +460,24 @@ game.update = function (tFrame) {
             if (!sprite.isColliding) {
                 console.log("Collision detected between R2D2 and a sprite!");
                 sprite.isColliding = true;
-                // Ajout de points
-                game.score.increaseScore(40);
+                // Ajout ou diminution du score en fonction du vaisseau touché
+                switch (sprite.id) {
+                    case "x_wing":
+                        game.score.increaseScore(10);
+                        break;
+                    case "naboo_starfighter":
+                        game.score.increaseScore(20);
+                        break;
+                    case "obi_wan_starfighter":
+                        game.score.increaseScore(30);
+                        break;
+                    case "anakin_starfighter":
+                        game.score.increaseScore(50);
+                        break;
+                    case "darthvader":
+                        game.score.decreaseScore(75);
+                        break;
+                }
                 // Disparition de l'avion
                 sprite.hide(); // Cache le sprite jusqu'à la prochaine vague
             }
