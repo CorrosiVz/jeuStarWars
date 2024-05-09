@@ -461,6 +461,27 @@ class Timer {
     }
 }
 
+///////////////////////////////////////////////////////////////
+// Barre de vie
+///////////////////////////////////////////////////////////////
+
+class lifeBar {
+    constructor(life){
+        this.life = life;
+    }
+    
+    lifeSet () {
+        let lifeDisplay = document.getElementById("life");
+        lifeDisplay.textContent = this.life;
+        
+        //Si R2D2 touche DarthVador on perds une vie
+        //refaire méthode areIntersecting pour DarthVador ? comment l'identifier parmi tous les sprites ?
+    
+        //si on touche une croix ou coeur on gagne une vie
+        // 🔋 ❤️
+    }
+}
+
 
 ///////////////////////////////////////////////////////////////
 // Codage du Jeux
@@ -601,6 +622,10 @@ game.init =  function () {
     this.score = new Score("score");
     // Démarrage du Timer
     this.startTimer = new Timer(0,3);
+
+    //Démarrage de la barre de vie
+    let startLifeBar = new lifeBar("❤️❤️❤️");
+    startLifeBar.lifeSet();
 
     let sprite = new Plane("x_wing");
     game.sprites.push(sprite);
