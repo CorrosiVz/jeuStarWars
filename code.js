@@ -466,20 +466,32 @@ window.addEventListener("load", () => {game.init();})
 
 
 // Ajout d'un Timer de 3min pour la partie
-var minute = 3;
-var seconde = 60;
+class Timer {
+    #minutes; //mémo : suppr?
+    #secondes;//mémo : suppr?
 
-function timer () { // faire un switch ccase plutôt que des if
-    if (minute == 0 && seconde == 0) { // si le temps est écoulé : arrêt du jeu
-        game.stop(); 
-    } else if (seconde == 0) { 
-        minute -= 1;
-        seconde = 60;
-    } else {
-    seconde -= 1;
+    constructor(minutes, secondes){
+        this.minutes = minutes;
+        this.secondes = secondes;
     }
-    setInterval(timer, 1000); // appel de la fonction timer chaque seconde
+
+    timer () { 
+        var timerDisplay = document.getElementById("timer");
+        timerDisplay.textContent = this.minutes + ":" + (this.secondes<10 ? "0":"") + this.secondes;
+        
+        if (this.minutes == 0 && this.secondes == 0) { // si le temps est écoulé : arrêt du jeu
+            game.stop(); 
+        } else if (this.secondes == 0) { 
+            this.minutes -= 1;
+            this.secondes = 59;
+        } else {
+        this.secondes -= 1;
+        }
+        
+        setTimeout(()=>this.timer(), 1000); // appel de la fonction timer chaque seconde
+    }
 }
 
-
-
+//Démarrage du Timer
+var startTimer = new Timer(3,0);
+startTimer.timer();

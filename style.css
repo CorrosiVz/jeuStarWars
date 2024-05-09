@@ -19,3 +19,13 @@ html,body {
   div.resources {
     display: none;
   }
+
+  #timer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 1;
+    color: white;
+    font-size: 32px;
+    font-weight: bold;
+  }
