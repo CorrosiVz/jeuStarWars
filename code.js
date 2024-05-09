@@ -257,7 +257,7 @@ class Sprite {
         this.pos = this.#pos.move(this.#speed, duration);
 
         if (this.id === "R2D2") {
-            // Empeche de sortir de l'aire de jeux
+            // R2D2 ne doit pas (visuellement) sortir de l'écran
             let minX = 0;
             let minY = 0;
             let maxX = playground.size.width - this.#size.width;
