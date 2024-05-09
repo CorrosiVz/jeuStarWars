@@ -464,8 +464,8 @@ class Timer {
     // Remet le timer à zéro
     reset() {
         this.stop();
-        this.minutes = 0;
-        this.secondes = 3;
+        this.minutes = 3;
+        this.secondes = 0;
     }
 }
 
