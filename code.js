@@ -394,7 +394,36 @@ class Score {
     }
 }
 
+///////////////////////////////////////////////////////////////
+// Timer
+///////////////////////////////////////////////////////////////
 
+// Ajout d'un Timer de 3min pour la partie
+class Timer {
+    #minutes; //mémo : suppr?
+    #secondes;//mémo : suppr?
+
+    constructor(minutes, secondes){
+        this.minutes = minutes;
+        this.secondes = secondes;
+    }
+
+    timer () { 
+        let timerDisplay = document.getElementById("timer");
+        timerDisplay.textContent = this.minutes + ":" + (this.secondes<10 ? "0":"") + this.secondes;
+        
+        if (this.minutes == 0 && this.secondes == 0) { // si le temps est écoulé : arrêt du jeu
+            game.stop(); 
+        } else if (this.secondes == 0) { 
+            this.minutes -= 1;
+            this.secondes = 59;
+        } else {
+        this.secondes -= 1;
+        }
+        
+        setTimeout(()=>this.timer(), 1000); // appel de la fonction timer chaque seconde
+    }
+}
 
 
 ///////////////////////////////////////////////////////////////
@@ -496,6 +525,9 @@ game.stop = function () {
 game.init =  function () {
     // Attend l'initialisation des autres sprites
     this.score = new Score("score");
+    //Démarrage du Timer
+    let startTimer = new Timer(3,0);
+    startTimer.timer();
 
     let sprite = new Plane("x_wing");
     game.sprites.push(sprite);
@@ -525,33 +557,6 @@ game.init =  function () {
 window.addEventListener("load", () => {game.init();})
 
 
-// Ajout d'un Timer de 3min pour la partie
-class Timer {
-    #minutes; //mémo : suppr?
-    #secondes;//mémo : suppr?
 
-    constructor(minutes, secondes){
-        this.minutes = minutes;
-        this.secondes = secondes;
-    }
 
-    timer () { 
-        var timerDisplay = document.getElementById("timer");
-        timerDisplay.textContent = this.minutes + ":" + (this.secondes<10 ? "0":"") + this.secondes;
-        
-        if (this.minutes == 0 && this.secondes == 0) { // si le temps est écoulé : arrêt du jeu
-            game.stop(); 
-        } else if (this.secondes == 0) { 
-            this.minutes -= 1;
-            this.secondes = 59;
-        } else {
-        this.secondes -= 1;
-        }
-        
-        setTimeout(()=>this.timer(), 1000); // appel de la fonction timer chaque seconde
-    }
-}
 
-//Démarrage du Timer
-var startTimer = new Timer(3,0);
-startTimer.timer();
