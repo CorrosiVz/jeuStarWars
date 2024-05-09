@@ -275,6 +275,32 @@ class Sprite {
 
         return new Rectangle(pos, this.#size);
     }
+
+    hide() {
+        this.#DOM.style.display = "none";
+    }
+
+    show() {
+        this.#DOM.style.display = "block";
+    }
+
+    // Remet le sprite à sa position initiale
+    reset() {
+        this.stop();
+        let x = playground.size.width * Math.random();
+        this.pos = new Position(x, -this.size.height);
+        this.changeSpeed(3, 203);
+        this.isColliding = false;
+    }
+
+    // Remet le Joueur à sa position initiale
+    resetPlayer() {
+        this.stop();
+        let x = playground.size.width / 2;
+        let y = playground.size.height - this.size.height;
+        this.pos = new Position(x, y);
+        this.changeSpeed(0, 0);
+    }
 }
 
 class Plane extends Sprite {
@@ -313,6 +339,7 @@ class Plane extends Sprite {
             this.waitingTime -= duration;
             if (this.waitingTime <= 0) {
                 this.waitingTime = 0;
+                this.show(); // Affiche le sprite si il avait été touché auparavant
                 this.start();
             }
         }
@@ -383,9 +410,56 @@ class Score {
     updateDisplay() {
         this.#DOM.innerHTML = 'Score: ' + this.#value;
     }
+
+    // Remet le score à zéro
+    reset() {
+        this.#value = 0;
+        this.updateDisplay();
+    }
 }
 
+///////////////////////////////////////////////////////////////
+// Timer
+///////////////////////////////////////////////////////////////
 
+// Ajout d'un Timer de 3min pour la partie
+class Timer {
+    #minutes; //mémo : suppr?
+    #secondes;//mémo : suppr?
+
+    constructor(minutes, secondes){
+        this.minutes = minutes;
+        this.secondes = secondes;
+    }
+
+    timer () { 
+        let timerDisplay = document.getElementById("timer");
+        timerDisplay.textContent = this.minutes + ":" + (this.secondes<10 ? "0":"") + this.secondes;
+        
+        if (this.minutes == 0 && this.secondes == 0) { // si le temps est écoulé : arrêt du jeu
+            game.stop(); 
+        } else if (this.secondes == 0) { 
+            this.minutes -= 1;
+            this.secondes = 59;
+        } else {
+        this.secondes -= 1;
+        }
+        
+        this.timeoutID = setTimeout(()=>this.timer(), 1000); // appel de la fonction timer chaque seconde
+    }
+
+    // Arrête le timer
+    stop() {
+        clearTimeout(this.timeoutID);
+    }
+
+    // Remet le timer à zéro
+    reset() {
+        this.stop();
+        this.minutes = 0;
+        this.secondes = 3;
+    }
+}
 
 
 ///////////////////////////////////////////////////////////////
@@ -422,8 +496,26 @@ game.update = function (tFrame) {
             if (!sprite.isColliding) {
                 console.log("Collision detected between R2D2 and a sprite!");
                 sprite.isColliding = true;
-                // Ajout de points
-                game.score.increaseScore(40);
+                // Ajout ou diminution du score en fonction du vaisseau touché
+                switch (sprite.id) {
+                    case "x_wing":
+                        game.score.increaseScore(10);
+                        break;
+                    case "naboo_starfighter":
+                        game.score.increaseScore(20);
+                        break;
+                    case "obi_wan_starfighter":
+                        game.score.increaseScore(30);
+                        break;
+                    case "anakin_starfighter":
+                        game.score.increaseScore(50);
+                        break;
+                    case "darthvader":
+                        game.score.decreaseScore(75);
+                        break;
+                }
+                // Disparition de l'avion
+                sprite.hide(); // Cache le sprite jusqu'à la prochaine vague
             }
         } else {
             sprite.isColliding = false;
@@ -473,18 +565,42 @@ function main(tFrame) {
 
 // Démmare le jeu
 game.start = function () {
+    document.getElementById("start-menu").style.display = "none";
+    this.startTimer.timer();
+    this.run = true;
+    this.tFrameLast = 0;
     // lance tous les sprites
     for(sprite of this.sprites) {
         sprite.start();
     }
+    main(0); // Début du cycle
+}
+
+game.reset = function () {
+    // Remet à zéro le score
+    this.score.reset();
+    // Remet à zéro le timer
+    this.startTimer.reset();
+    // Remet à zéro les sprites
+    for (let sprite of this.sprites) {
+        sprite.reset();
+    }
+    // Remet à zéro le robot
+    this.r2d2.resetPlayer();
 }
 
 game.stop = function () {
     game.run = false;
+    this.startTimer.stop();
+    document.getElementById("start-menu").style.display = "block";
+    this.reset();
 }
 game.init =  function () {
     // Attend l'initialisation des autres sprites
+
     this.score = new Score("score");
+    // Démarrage du Timer
+    this.startTimer = new Timer(0,3);
 
     let sprite = new Plane("x_wing");
     game.sprites.push(sprite);
@@ -501,17 +617,13 @@ game.init =  function () {
     sprite = new Plane("darthvader");
     game.sprites.push(sprite);
 
-    this.run = true;
-    this.tFrameLast = 0;
-
-    game.start();
-    main(0); // Début du cycle
 }
 
 // L'initialisation est asynchrone donc il faut attendre
-// Il faut que toutes les images soient chargées donc on
-// s'acroche à l'évelment load de window
+// que toutes les images soient chargées donc on
+// s'acroche à l'événement load de window
 window.addEventListener("load", () => {game.init();})
+window.addEventListener("load", () => {document.getElementById('start-button').addEventListener('click', () => game.start());})
 
 
 
