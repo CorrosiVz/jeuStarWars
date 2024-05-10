@@ -1,79 +1,3 @@
-///////////////////////////////////////////////////////////////
-// Consignes
-///////////////////////////////////////////////////////////////
-/* 1. Le but de ce TP est de réaliser un jeux d'arcade à l'aide de la notion de sprite étudiée dans les TP
-précédents. L'analyse et le codage seront démarré lors de ce TP et devront etre poursuivit jusqu'au rendu
-prévu le vendredi 10 mai au plus tard.
-- Le thème est imposé : l'univers de StarWar avec au moins un niveau avec le robot R2D2 qui se bat contre des vaisseaux.
-- La technologie est imposée : manipuler les attributs d'objets DOM pour l'animation. La base fournie par ce TP
-  est aussi imposée.
-2. L'objectif est de réaliser un jeux complet avec la notion de Sprite. Une proposition de jeux est de faire "voler"
-des avions disponibles ici :
-
-x_wing.png
-anakin_starfighter.png
-naboo_starfighter.png
-obi_wan_starfighter.png
-
-Un objectif possible du jeux est de faire bouger le robot pour qu'il "attrape" les avions. Il doit cependant
-eviter darthvader.png. Chaque avion vaut un certain nombre de points, "darthvader" fait diminuer ce nombre de
-points. Le jeux se termine apres en temps donné, par exemple 3 minutes.
-Attention : la création d'un objet DOM avec une nouvelle image demande un temps de chargement pour avoir accès
-à l'image. Le chargement se fait de manière asynchrone.
-
-3. Gestion des collisions
-Le jeux doit principalement faire "voler" des avions dans l'aire de jeux, et les faire attraper par le robot.
-La manière simple ne gérer ces collissions c'est de définir un masque de collision appelé aussi hit box.
-Pour simplifier, nous faisont l'hypothèse que la hitbox est de forme rectangulaire. La collision devient alors
-un calcul plus simple d'intersection de rectangles.
-Pour trouver la formule du calcul de l'intersection, il faut considérer que les rectangles sont parallèles aux
-axes X et Y. Cela revient alors à calculer l'intersection de segments sur chaque axe.
-Il peut être plus facile de calculer la formule lorsqu'il n'y a pas d'intersection
-
-Il n'y a pas d'intersection entre deux rectangle R1 et R2 de point haut gauche égal à (x1,y1) et (x2,y2) et de
-taille (w1,h1) et (w2,h2) si au moins l'une des conditions suivante est vraie pour l'axe des X :
-
-R2 est à droite de R1, donc x2 > x1+w1
-R2 est à gauche de R1 donc x2+w2 < x1
-On fait de même sur l'axe des Y pour trouver la formule finale de collision.
-
-Définir la notion de rectangle, par exemple à l'aide d'une position et d'une taille en 2 dimensions.
-Rectangle(position,size)
-La position est un objet avec les coordonnées x et y. La taille en 2D est un objet avec une longeur et une hauteur :
-Coder la méthode areIntersecting qui retourne vrai s'il y a une intersection entre deux rectangles.
-Il s'agit d'une méthode de la classe Rectangle
-
-Ajouter aux objets Sprite, la méthode qui retourne le Rectangle de la hitbox de l'objet.
-Nous allons nous servir de cette méthode pour savoir si un mouvement du sprite peut provoquer une collision.
-Cette méthode doit donc fonctionner en simulant un mouvement, donc en lui fournissant une position potentielle
-pos en paramètre. Si cette valeur n'est pas fournie, alors c'est la position actuelle de l'objet qui est utilisée.
-Cette méthode peut donc s'utiliser de deux manières : avec ou sans paramètre. Pour détecter cela,
-il suffit de tester si le paramètre est égal à la valeur undefined.
-De cette manière sous avons simulé la notion de surchage.
-
-Selon votre analyse, vous pouvez être amené à savoir si un sprite est contenu dans un autre.
-Dans ce cas, vous pouvez coder la méthode isInside qui retourne vrai si l'objet auquel on applique la méthode,
-est à l'interieur du rectangle r. Il s'agit d'une méthode d'une instance de Rectangle.
-
-4. Codage du jeux
-
-Le jeux fonctionne avec le principe du rafraichissement synchonisé. Par exemple si le taux de rafraichissement est
-de 60Hz, alors il faut faire évoluer le jeux 60 fois par secondes. Pour cela vous devez utiliser la fonction
-window.requestAnimationFrame qui prend en paramètre une fonction auquel est passé un temps en milliseconde.
-Ce temps est absolu et est donné depuis le début de l'animation c'est à dire le premier appel à
-requestAnimationFrame. C'est cette fonction qui doit réaliser la mise à jour du jeu à interval controlé.
-Le système ne garantit pas la régularité des appels à votre fonction. C'est pour cette raison que le temps
-vous est fournit pour réaliser des calculs de déplacements sans saccades.
-
-Beaucoup de jeux vidéo sont réalisés avec la technologie du redessin complêt pour chaque image de l'animation.
-Avec la possibilité de changement les valeurs des attributs CSS‡ des objets DOM, cette technique n'est pas à
-mettre en oeuvre dans ce TP. En effet, il suffit simplement de changer les attributs CSS des objets DOM comme
-la position, la taille, etc, à chaque appel de requestAnimationFrame pour réaliser l'animation du jeux.
-
-Le codage du jeux se réalise dans la methode game.update. Vous pouvez créer des sous type de Sprite pour
-modéliser le comportement des avions.
-*/
-
 // Notion de Position par rapport à un point fixe
 // C'est une valeur, donc non modifiable
 class Position {
@@ -455,8 +379,8 @@ class Score {
 // Ajout d'un Timer de 3min pour la partie
 class Timer {
     id;
-    #minutes; //mémo : suppr?
-    #secondes;//mémo : suppr?
+    #minutes;
+    #secondes;
 
     constructor(id, minutes, secondes) {
         this.id = id;
@@ -527,15 +451,10 @@ class LifeBar {
     lifeSet () {
         let lifeDisplay = document.getElementById("life");
         lifeDisplay.textContent = this.life;
-        
-        //Si R2D2 touche DarthVador on perds une vie
-        //refaire méthode areIntersecting pour DarthVador ? comment l'identifier parmi tous les sprites ?
-    
-        //si on touche une croix ou coeur on gagne une vie
-        // 🔋 ❤️
     }
 
     loseLife () {
+        //Si R2D2 touche DarthVador on perds une vie
         let lifeArray = Array.from(this.life);
         if (lifeArray.length > 1){
             lifeArray.pop();
