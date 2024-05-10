@@ -465,7 +465,7 @@ class Timer {
     reset() {
         this.stop();
         this.minutes = 0;
-        this.secondes = 3;
+        this.secondes = 5;
     }
 }
 
@@ -487,6 +487,12 @@ class lifeBar {
     
         //si on touche une croix ou coeur on gagne une vie
         // 🔋 ❤️
+    }
+
+    //mémo : pas sûr de la méthode
+    loseLife () {
+        this.life = "❤️❤️";
+        this.lifeSet();
     }
 }
 
@@ -541,6 +547,7 @@ game.update = function (tFrame) {
                         break;
                     case "darthvader":
                         game.score.decreaseScore(75);
+                        game.startLifeBar.loseLife();
                         break;
                 }
                 // Disparition de l'avion
@@ -555,6 +562,10 @@ game.update = function (tFrame) {
 // Reaction du jeux à l'enfoncement d'une touche
 game.onkeydown = function (key) {
     const delta = 10;
+    if (!game.run) {
+        console.log("La partie n'est pas en cours !");
+        return;
+    }
     switch (key) {
         case "ArrowLeft":
             game.r2d2.changeSpeed(-delta, 0);
@@ -597,6 +608,7 @@ game.start = function () {
     document.getElementById("start-menu").style.display = "none";
     this.run = true;
     this.startTimer.timer();
+    this.startLifeBar.lifeSet();
     this.tFrameLast = 0;
     // lance tous les sprites
     for(sprite of this.sprites) {
@@ -618,8 +630,18 @@ game.stop = function () {
     console.log("game.stop() a été appelé !");
     this.run = false;
     this.startTimer.stop();
-    document.getElementById("start-menu").style.display = "flex";
+    // Affiche le score avant de le réinitialiser pour la prochaine partie
+    document.getElementById("final-score").textContent = "Score: " + this.score.value;
+    document.getElementById("game-over-menu").style.display = "flex"; // Affiche la fenêtre Game Over
     this.reset();
+}
+game.goToMenu = function () {
+    document.getElementById("game-over-menu").style.display = "none"; // Cache la fenêtre Game Over
+    document.getElementById("start-menu").style.display = "flex"; // Affiche le menu principal
+}
+game.restart = function () {
+    document.getElementById("game-over-menu").style.display = "none";
+    game.start();
 }
 game.init =  function () {
     // Attend l'initialisation des autres sprites
@@ -629,8 +651,7 @@ game.init =  function () {
     
     this.startTimer = new Timer("startTimer",0,3);
 
-    let startLifeBar = new lifeBar("❤️❤️❤️");
-    startLifeBar.lifeSet();
+    this.startLifeBar = new lifeBar("❤️❤️❤️");
 
     let sprite = new Plane("x_wing");
     game.sprites.push(sprite);
@@ -653,7 +674,10 @@ game.init =  function () {
 // que toutes les images soient chargées donc on
 // s'acroche à l'événement load de window
 window.addEventListener("load", () => {game.init();})
-window.addEventListener("load", () => {document.getElementById('start-button').addEventListener('click', () => game.start());})
+window.addEventListener("load", () => {document.getElementById("start-button").addEventListener("click", () => game.start());})
+window.addEventListener("load", () => {document.getElementById("replay-button").addEventListener("click", () => game.restart());})
+// Retour au menu principal
+window.addEventListener("load", () => {document.getElementById("menu-button").addEventListener("click", () => game.goToMenu());})
 
 
 
