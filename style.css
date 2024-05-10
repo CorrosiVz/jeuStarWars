@@ -2,10 +2,18 @@ html,body {
   margin: 0px;
   padding: 0px;
 }
+@font-face {
+  font-family: "Starjedi";
+  src: url("data/Starjedi.ttf");
+  font-weight: normal;
+  font-style: normal;
+}
+
 h1 {
+  font-family: "Starjedi";
   text-align: center;
   font-size: 48px;
-  color: #fff;
+  color: #e4e735;
 }
 #start-menu {
     position: absolute;
@@ -13,8 +21,11 @@ h1 {
     left: 0;
     height: 100vh;
     width: 100%;
-    background: rgba(0, 0, 0, 0.8); /* Fond semi-transparent */
+    background-image: url('data/death_star.jpg');
+    background-size: cover; /* Pour s'assurer que l'image couvre toute la zone du menu */
+    background-repeat: no-repeat; /* Pour éviter que l'image ne se répète */
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     z-index: 2;
@@ -22,12 +33,14 @@ h1 {
 
   #best-score {
     font-size: 24px;
+    font-family: 'Orbitron', sans-serif;
     color: white;
   }
 
   #start-button {
     font-size: 24px;
     padding: 10px 20px;
+    margin: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -43,6 +56,7 @@ h1 {
     width: 100%;
     background: rgba(0, 0, 0, 0.8); /* Fond semi-transparent */
     display: none; /* Caché par défaut */
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     z-index: 2;
@@ -51,6 +65,19 @@ h1 {
   #resume-button {
     font-size: 24px;
     padding: 10px 20px;
+    margin: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  #return-menu-button {
+    font-size: 24px;
+    padding: 10px 20px;
+    margin: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -61,6 +88,7 @@ h1 {
 
   #actual-score {
     font-size: 24px;
+    font-family: 'Orbitron', sans-serif;
     color: white;
   }
 #game-over-menu {
@@ -69,8 +97,11 @@ h1 {
     left: 0;
     height: 100vh;
     width: 100%;
-    background: rgba(0, 0, 0, 0.8); /* Fond semi-transparent */
+    background-image: url('data/death_star_firing.png');
+    background-size: cover;
+    background-repeat: no-repeat;
     display: none; /* Caché par défaut */
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     z-index: 2;
@@ -79,6 +110,7 @@ h1 {
   #menu-button {
     font-size: 24px;
     padding: 10px 20px;
+    margin: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -90,6 +122,7 @@ h1 {
   #replay-button {
     font-size: 24px;
     padding: 10px 20px;
+    margin: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -100,6 +133,9 @@ h1 {
 
   #final-score {
     font-size: 24px;
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 10px;
+    font-family: 'Orbitron', sans-serif;
     color: white;
   }
 #playground {
@@ -122,6 +158,8 @@ h1 {
 
   #score {
     position: absolute;
+    font-family: 'Orbitron', sans-serif;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     top: 42px;
     right: 10px;
     color: #fff;
@@ -131,6 +169,7 @@ h1 {
 
   #timer {
     position: absolute;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     top: 0;
     right: 10px;
     z-index: 1;

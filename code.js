@@ -519,7 +519,7 @@ class Timer {
 // Barre de vie
 ///////////////////////////////////////////////////////////////
 
-class lifeBar {
+class LifeBar {
     constructor(life) {
         this.life = life;
     }
@@ -554,7 +554,6 @@ class lifeBar {
     }
 }
 
-
 ///////////////////////////////////////////////////////////////
 // Codage du Jeux
 ///////////////////////////////////////////////////////////////
@@ -565,7 +564,7 @@ let game = {
     tFrameLast: 0,
     pauseTime: null,
     r2d2: new Sprite("R2D2"),
-    sprites: []
+    sprites: [],
 };
 
 
@@ -704,6 +703,7 @@ game.setPause = function () {
     this.startTimer.incrementTimer1s();
     this.pauseTime = new Date();
     
+    document.getElementById("actual-score").textContent = "Score: " + this.score.value;
     document.getElementById("pause-menu").style.display = "flex";
 }
 game.resume = function () {
@@ -781,9 +781,9 @@ game.init =  function () {
     this.bestScore.value = 0;
     this.score = new Score("score");
     
-    this.startTimer = new Timer("startTimer",0,3);
+    this.startTimer = new Timer("startTimer",3,0);
 
-    this.startLifeBar = new lifeBar("❤️❤️❤️");
+    this.startLifeBar = new LifeBar("❤️❤️❤️");
 
     let sprite = new Plane("x_wing");
     game.sprites.push(sprite);
