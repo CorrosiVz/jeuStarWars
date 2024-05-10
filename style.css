@@ -20,6 +20,11 @@ h1 {
     z-index: 2;
   }
 
+  #best-score {
+    font-size: 24px;
+    color: white;
+  }
+
   #start-button {
     font-size: 24px;
     padding: 10px 20px;

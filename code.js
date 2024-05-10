@@ -418,6 +418,11 @@ class Score {
         return this.#value;
     }
 
+    setValue(value) {
+        this.#value = value;
+        this.updateDisplay();
+    }
+
     // Ajoute un nombre de points au score
     increaseScore(value) {
         this.#value += value;
@@ -740,6 +745,7 @@ game.stop = function () {
     this.startTimer.stop();
     // Affiche le score avant de le réinitialiser pour la prochaine partie
     document.getElementById("final-score").textContent = "Score: " + this.score.value;
+    this.checkBestScore();
     document.getElementById("game-over-menu").style.display = "flex"; // Affiche la fenêtre Game Over
     document.getElementById("pause-menu").style.display = "none"; // Cache la fenêtre Pause
     this.reset();
@@ -748,14 +754,31 @@ game.goToMenu = function () {
     document.getElementById("game-over-menu").style.display = "none"; // Cache la fenêtre Game Over
     document.getElementById("start-menu").style.display = "flex"; // Affiche le menu principal
 }
+game.returnToMenu = function () {
+    document.getElementById("pause-menu").style.display = "none"; // Cache la fenêtre Pause
+    document.getElementById("start-menu").style.display = "flex"; // Affiche le menu principal
+    this.run = false;
+    this.pause = false;
+    this.startTimer.stop();
+    this.reset();
+}
 game.restart = function () {
     document.getElementById("game-over-menu").style.display = "none";
     game.start();
+}
+game.checkBestScore = function () {
+    if (this.score.value > this.bestScore.value) {
+        this.bestScore.setValue(this.score.value);
+        // console.log("Nouveau meilleur score : " + this.bestScore.value);
+    }
+    document.getElementById("best-score").textContent = "Meilleur Score obtenu durant cette session : " + this.bestScore.value;
 }
 game.init =  function () {
     // Attend l'initialisation des autres sprites
     this.r2d2.resetPlayer();
 
+    this.bestScore = new Score("best-score");
+    this.bestScore.value = 0;
     this.score = new Score("score");
     
     this.startTimer = new Timer("startTimer",0,3);
@@ -789,4 +812,4 @@ window.addEventListener("load", () => {document.getElementById("replay-button").
 window.addEventListener("load", () => {document.getElementById("menu-button").addEventListener("click", () => game.goToMenu());})
 // Pause du jeu
 window.addEventListener("load", () => {document.getElementById("resume-button").addEventListener("click", () => game.resume());})
-
+window.addEventListener("load", () => {document.getElementById("return-menu-button").addEventListener("click", () => game.returnToMenu());})
