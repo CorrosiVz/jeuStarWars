@@ -503,6 +503,7 @@ class lifeBar {
 
 let game = {
     run: false,
+    pause: false,
     tFrameLast: 0,
     r2d2: new Sprite("R2D2"),
     sprites: []
@@ -512,49 +513,51 @@ let game = {
 
 // Mise à jour du jeux à la date indiquée
 game.update = function (tFrame) {
-    // Calcule la durée qui s'est passé apres la frame précédente
-    let duration = tFrame - this.tFrameLast;
-    // Met à jour le temps précédent
-    this.tFrameLast = tFrame;
-    // Déplace le robot
-    game.r2d2.update(duration);
-    // Déplace les autres objets
-    for (let sprite of this.sprites) {
-        sprite.update(duration);
-    }
+    if (this.pause === false) {
+        // Calcule la durée qui s'est passé apres la frame précédente
+        let duration = tFrame - this.tFrameLast;
+        // Met à jour le temps précédent
+        this.tFrameLast = tFrame;
+        // Déplace le robot
+        game.r2d2.update(duration);
+        // Déplace les autres objets
+        for (let sprite of this.sprites) {
+            sprite.update(duration);
+        }
 
-    // Vérifie les collisions entre R2D2 et tous les autres sprites
-    let r2d2Hitbox = game.r2d2.getHitbox();
-    for (let sprite of this.sprites) {
-        let spriteHitbox = sprite.getHitbox();
-        if (r2d2Hitbox.areIntersecting(spriteHitbox)) {
-            if (!sprite.isColliding) {
-                console.log("Collision detected between R2D2 and a sprite!");
-                sprite.isColliding = true;
-                // Ajout ou diminution du score en fonction du vaisseau touché
-                switch (sprite.id) {
-                    case "x_wing":
-                        game.score.increaseScore(10);
-                        break;
-                    case "naboo_starfighter":
-                        game.score.increaseScore(20);
-                        break;
-                    case "obi_wan_starfighter":
-                        game.score.increaseScore(30);
-                        break;
-                    case "anakin_starfighter":
-                        game.score.increaseScore(50);
-                        break;
-                    case "darthvader":
-                        game.score.decreaseScore(75);
-                        game.startLifeBar.loseLife();
-                        break;
+        // Vérifie les collisions entre R2D2 et tous les autres sprites
+        let r2d2Hitbox = game.r2d2.getHitbox();
+        for (let sprite of this.sprites) {
+            let spriteHitbox = sprite.getHitbox();
+            if (r2d2Hitbox.areIntersecting(spriteHitbox)) {
+                if (!sprite.isColliding) {
+                    console.log("Collision detected between R2D2 and a sprite!");
+                    sprite.isColliding = true;
+                    // Ajout ou diminution du score en fonction du vaisseau touché
+                    switch (sprite.id) {
+                        case "x_wing":
+                            game.score.increaseScore(10);
+                            break;
+                        case "naboo_starfighter":
+                            game.score.increaseScore(20);
+                            break;
+                        case "obi_wan_starfighter":
+                            game.score.increaseScore(30);
+                            break;
+                        case "anakin_starfighter":
+                            game.score.increaseScore(50);
+                            break;
+                        case "darthvader":
+                            game.score.decreaseScore(75);
+                            game.startLifeBar.loseLife();
+                            break;
+                        }
+                    // Disparition de l'avion
+                    sprite.hide(); // Cache le sprite jusqu'à la prochaine vague
                 }
-                // Disparition de l'avion
-                sprite.hide(); // Cache le sprite jusqu'à la prochaine vague
+            } else {
+                sprite.isColliding = false;
             }
-        } else {
-            sprite.isColliding = false;
         }
     }
 }
@@ -562,28 +565,43 @@ game.update = function (tFrame) {
 // Reaction du jeux à l'enfoncement d'une touche
 game.onkeydown = function (key) {
     const delta = 10;
-    if (!game.run) {
+    // On ne peut pas changer la vitesse de r2d2 si la partie n'est pas en cours
+    if (game.run) {
+        if (key === "s") {
+            game.stop();
+        }
+        if (!game.pause) {
+            switch (key) {
+                case "ArrowLeft":
+                    game.r2d2.changeSpeed(-delta, 0);
+                    break;
+                case "ArrowUp":
+                    game.r2d2.changeSpeed(0, -delta);
+                    break;
+                case "ArrowRight":
+                    game.r2d2.changeSpeed(delta, 0);
+                    break;
+                case "ArrowDown":
+                    game.r2d2.changeSpeed(0, delta);
+                    break;
+                case " ":
+                    console.log("Game paused");
+                    game.pause = true;
+                    break;
+                default:
+                    if (key !== "Shift" && key !== "s" && key !== " ") {
+                        console.log(key);
+                    }
+            }
+        } else if (game.pause) {
+            if (key === " ") {
+                console.log("Game resumed");
+                game.pause = false;
+            }
+        }
+    } else {
         console.log("La partie n'est pas en cours !");
         return;
-    }
-    switch (key) {
-        case "ArrowLeft":
-            game.r2d2.changeSpeed(-delta, 0);
-            break;
-        case "ArrowUp":
-            game.r2d2.changeSpeed(0, -delta);
-            break;
-        case "ArrowRight":
-            game.r2d2.changeSpeed(delta, 0);
-            break;
-        case "ArrowDown":
-            game.r2d2.changeSpeed(0, delta);
-            break;
-        case "s":
-            game.stop();
-            break;
-        default:
-            console.log(key)
     }
 }
 
@@ -629,6 +647,7 @@ game.reset = function () {
 game.stop = function () {
     console.log("game.stop() a été appelé !");
     this.run = false;
+    this.pause = false;
     this.startTimer.stop();
     // Affiche le score avant de le réinitialiser pour la prochaine partie
     document.getElementById("final-score").textContent = "Score: " + this.score.value;
@@ -678,8 +697,5 @@ window.addEventListener("load", () => {document.getElementById("start-button").a
 window.addEventListener("load", () => {document.getElementById("replay-button").addEventListener("click", () => game.restart());})
 // Retour au menu principal
 window.addEventListener("load", () => {document.getElementById("menu-button").addEventListener("click", () => game.goToMenu());})
-
-
-
 
 
