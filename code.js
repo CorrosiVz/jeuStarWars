@@ -379,8 +379,8 @@ class Score {
 // Ajout d'un Timer de 3min pour la partie
 class Timer {
     id;
-    #minutes; //mémo : suppr?
-    #secondes;//mémo : suppr?
+    #minutes;
+    #secondes;
 
     constructor(id, minutes, secondes) {
         this.id = id;
@@ -451,15 +451,10 @@ class LifeBar {
     lifeSet () {
         let lifeDisplay = document.getElementById("life");
         lifeDisplay.textContent = this.life;
-        
-        //Si R2D2 touche DarthVador on perds une vie
-        //refaire méthode areIntersecting pour DarthVador ? comment l'identifier parmi tous les sprites ?
-    
-        //si on touche une croix ou coeur on gagne une vie
-        // 🔋 ❤️
     }
 
     loseLife () {
+        //Si R2D2 touche DarthVador on perds une vie
         let lifeArray = Array.from(this.life);
         if (lifeArray.length > 1){
             lifeArray.pop();

@@ -7,8 +7,8 @@ Si le compteur tombe à zéro ou que votre nombre de vies est épuisé, la parti
 ## Auteurs
 #### Auteur code source : Jean-Pierre Chevallet
 #### Membres du groupe :
-- Anthony Lainé </br>
-- Montana Katz
+- Anthony Lainé (M2 MIASHS DCISS RS)</br>
+- Montana Katz (M1 MIASHS DCISS)
 
 ## Source des images supplémentaires :
 https://alphacoders.com/death-star-wallpapers
@@ -33,6 +33,13 @@ Cela à pour effet d'augmenter la vitesse de déplacement de R2D2, donc si vous 
 - Ajout d'une fenêtre Pause
 - R2D2 (le Joueur) ne peut pas sortir (visuellement) de l'écran
 - Boutons permettant de naviguer entre les menus et fenêtres
+
+## Système de points
+- X-wing : 10 pts
+- Naboo starfighter : 20 pts
+- Obi-Wan : 30 pts
+- Anakin : 50 pts
+- Dark Vador : -75 pts et fait perdre une vie ❤️
 
 ## Glossaire du fichier code.js
 nombre = numéro de ligne dans le fichier code.js :
