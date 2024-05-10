@@ -20,7 +20,7 @@ https://wallpapercave.com/w/wp8835690
 
 ## Contrôles
 Vous contrôllez le robot R2D2 avec les touches directionnelles du clavier (← ; → ; ↑ ; ↓) </br>
-Cela à pour effet d'augmenter la vitesse de déplacement de R2D2, donc si vous touchez le mur droit par exemple, il va falloir attendre de décrémenter le côté droit en appuyant sur la flèche gauche (←) avant de pouvoir repartir vers la gauche ! </br>
+Cela a pour effet d'augmenter la vitesse de déplacement de R2D2, donc si vous touchez le mur droit par exemple, il va falloir attendre de décrémenter le côté droit en appuyant sur la flèche gauche (←) avant de pouvoir repartir vers la gauche ! </br>
 <strong>S</strong> : met fin à la partie, c'est un Game Over ! </br>
 <strong>Espace</strong> : met le jeu en pause et résume la partie
 
