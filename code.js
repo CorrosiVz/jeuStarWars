@@ -151,6 +151,14 @@ class Speed {
         }
     }
 
+    // Retourne une nouvelle instance de Speed avec les mêmes valeurs (pour la pause)
+    cloneSpeed() {
+        let cloneSp = new Speed(this.#max);
+        cloneSp.#x = this.#x;
+        cloneSp.#y = this.#y;
+        return cloneSp;
+    }
+
     // Calcule un déplacement en x et y à cette vitesse pour un temps donné
     // duration: Number, temps considéré en millisecondes
     // @return: un déplacement {x,y}
@@ -189,6 +197,7 @@ class Sprite {
     #speed;         // La vitesse de déplacement actuelle en pixels par seconde
     #size;          // Taille de l'objet { height, width }
     #isColliding;   // Vrai si le sprite est entré en collision avec un autre sprite
+    #previousSpeed; // Vitesse du sprite laissé en mémoire avant stop
     constructor(id) {
         this.id = id;
         // Recherche l'élément DOM
@@ -236,6 +245,22 @@ class Sprite {
 
     stop() {
         this.#speed.stop();
+    }
+
+    setPauseSprite() {
+        // On stocke la vitesse actuelle avant la pause
+        this.#previousSpeed = this.#speed.cloneSpeed();
+        console.log("Vitesse sauvegardée", this.#previousSpeed);
+        this.#speed.stop();
+    }
+
+    resumeSprite() {
+        // Rétablit la vitesse à la valeur stockée avant la pause
+        if (this.#previousSpeed) {
+            this.#speed = this.#previousSpeed;
+            console.log("Vitesse rétablie", this.#speed);
+            this.#previousSpeed = null;
+        }
     }
 
     isStopped() {
@@ -335,7 +360,7 @@ class Plane extends Sprite {
             this.waitingTime = 60;
         }
         // Si le sprite est arrété, attend puis redémmare
-        if (this.isStopped()) {
+        if (this.isStopped() && game.pause === false) {
             this.waitingTime -= duration;
             if (this.waitingTime <= 0) {
                 this.waitingTime = 0;
@@ -434,6 +459,11 @@ class Timer {
         this.secondes = secondes;
     }
 
+    getTimer() {
+        console.log(this.minutes + ":" + this.secondes);
+        return this.minutes + ":" + this.secondes;
+    }
+
     timer () { 
         let self = this; // stocker une référence à this
         let timerDisplay = document.getElementById("timer");
@@ -450,10 +480,21 @@ class Timer {
             // console.log("je décrémente", this.minutes, this.secondes);
         }
 
-        if (game.run === true) {
+        if (game.run === true && game.pause === false) {
             // console.log("setTimeout a été appelé !");
             this.timeoutID = setTimeout(()=>self.timer(), 1000);
         }
+    }
+
+    // Incrémenter le timer d'1 seconde
+    incrementTimer1s() {
+        if (this.secondes < 59) {
+            this.secondes += 1;
+        } else {
+            this.secondes = 0;
+            this.minutes += 1;
+        }
+        document.getElementById("timer").textContent = this.minutes + ":" + this.secondes;
     }
 
     // Arrête le timer
@@ -465,7 +506,7 @@ class Timer {
     reset() {
         this.stop();
         this.minutes = 0;
-        this.secondes = 5;
+        this.secondes = 40;
     }
 }
 
@@ -489,9 +530,21 @@ class lifeBar {
         // 🔋 ❤️
     }
 
-    //mémo : pas sûr de la méthode
     loseLife () {
-        this.life = "❤️❤️";
+        let lifeArray = Array.from(this.life);
+        if (lifeArray.length > 1){
+            lifeArray.pop();
+            lifeArray.pop(); // Pour enlever le 2ème coeur de la séquence de caractère unicode de l'émoji coeur
+            this.life = lifeArray.join("");
+        } else {
+            this.life = "";
+            game.stop();
+        }
+        this.lifeSet();
+    }
+
+    resetLife() {
+        this.life = "❤️❤️❤️";
         this.lifeSet();
     }
 }
@@ -505,6 +558,7 @@ let game = {
     run: false,
     pause: false,
     tFrameLast: 0,
+    pauseTime: null,
     r2d2: new Sprite("R2D2"),
     sprites: []
 };
@@ -586,7 +640,7 @@ game.onkeydown = function (key) {
                     break;
                 case " ":
                     console.log("Game paused");
-                    game.pause = true;
+                    game.setPause();
                     break;
                 default:
                     if (key !== "Shift" && key !== "s" && key !== " ") {
@@ -596,7 +650,7 @@ game.onkeydown = function (key) {
         } else if (game.pause) {
             if (key === " ") {
                 console.log("Game resumed");
-                game.pause = false;
+                game.resume();
             }
         }
     } else {
@@ -635,13 +689,48 @@ game.start = function () {
     main(0); // Début du cycle
 }
 
+// Gestion de la pause du jeu
+game.setPause = function () {
+    this.r2d2.setPauseSprite();
+    for (let sprite of this.sprites) {
+        sprite.setPauseSprite();
+    }
+    this.pause = true;
+    this.startTimer.incrementTimer1s();
+    this.pauseTime = new Date();
+    
+    document.getElementById("pause-menu").style.display = "flex";
+}
+game.resume = function () {
+    // On remet les vitesses des sprites à leur valeur avant la pause
+    this.r2d2.resumeSprite();
+    for (let sprite of this.sprites) {
+        sprite.resumeSprite();
+    }
+    this.pause = false;
+    if (this.pauseTime) {
+        let pauseDuration = new Date() - this.pauseTime;
+        this.tFrameLast += pauseDuration;
+        this.pauseTime = null;
+    }
+    // On ne veut pas perdre une seconde quand on sort de la pause
+    this.startTimer.incrementTimer1s();
+    // this.startTimer.getTimer();
+    this.startTimer.timer();
+    document.getElementById("pause-menu").style.display = "none";
+}
+
 game.reset = function () {
     // Remet à zéro le score
     this.score.reset();
     // Remet à zéro le timer
     this.startTimer.reset();
-    // Remet à zéro le robot
+    // Remet la barre de vie à 3 coeurs
+    this.startLifeBar.resetLife();
+    // Remet en place le robot R2D2 (Joueur)
     this.r2d2.resetPlayer();
+    // Remet le compteur de pause à null (si le jeu s'arrête alors que pause est toujours true)
+    this.pauseTime = null;
 }
 
 game.stop = function () {
@@ -652,6 +741,7 @@ game.stop = function () {
     // Affiche le score avant de le réinitialiser pour la prochaine partie
     document.getElementById("final-score").textContent = "Score: " + this.score.value;
     document.getElementById("game-over-menu").style.display = "flex"; // Affiche la fenêtre Game Over
+    document.getElementById("pause-menu").style.display = "none"; // Cache la fenêtre Pause
     this.reset();
 }
 game.goToMenu = function () {
@@ -697,5 +787,6 @@ window.addEventListener("load", () => {document.getElementById("start-button").a
 window.addEventListener("load", () => {document.getElementById("replay-button").addEventListener("click", () => game.restart());})
 // Retour au menu principal
 window.addEventListener("load", () => {document.getElementById("menu-button").addEventListener("click", () => game.goToMenu());})
-
+// Pause du jeu
+window.addEventListener("load", () => {document.getElementById("resume-button").addEventListener("click", () => game.resume());})
 
