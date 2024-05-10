@@ -3,6 +3,8 @@
 <head>
   <meta charset="utf-8">
   <title>Star Wars Game</title>
+  <!-- Lien pour l'import du police-font Orbitron -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link href="style.css" rel="stylesheet" type="text/css">
   <script defer src="code.js"></script>
 </head>
@@ -21,16 +23,35 @@
   
   <!-- Menu démarrer -->
   <div id="start-menu">
+    <h1>Jeu Star Wars</h1>
+    <p id="best-score"> Meilleur Score obtenu durant cette session : 0</p>
     <button id="start-button">Démarrer la partie</button>
+  </div>
+
+  <!-- Fenêtre Game Over -->
+  <div id="game-over-menu">
+    <h1>Game over</h1>
+    <p id="final-score"> Score: 0</p>
+    <button id="replay-button">Rejouer</button>
+    <button id="menu-button">Menu principal</button>
+  </div>
+
+  <!-- Fenêtre Pause -->
+  <div id="pause-menu">
+    <h1>Pause</h1>
+    <p id="actual-score"> Score: 0</p>
+    <button id="resume-button">Reprendre</button>
+    <button id="return-menu-button">Retour au Menu principal</button>
   </div>
 
   <!-- Playground (le jeu) -->
   <div id="playground"></div>
 
   <!-- Timer  -->
-  <div id = "timer">3:00</div>
+  <div id="timer">3:00</div>
 
-  <!-- Life -->
+  <!-- Barre de vie -->
   <div id="life"></div>
+
 </body>
 </html>
